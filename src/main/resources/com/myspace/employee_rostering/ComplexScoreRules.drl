@@ -1,0 +1,39 @@
+package com.myspace.employee_rostering;
+
+import java.time.*;
+import java.lang.Number;
+import java.util.ArrayList;
+import java.util.List;
+
+import java.lang.Number;
+import java.time.LocalDateTime;
+
+
+
+
+
+
+rule "DayOffRequest"
+	dialect "mvel"
+	when
+		$dayOffRequest : DayOffRequest( )
+		ShiftAssignment(employee != null,  employee.name.equals($dayOffRequest.employee.name)  , eval(shift.timeslot.startTime.compareTo($dayOffRequest.date)==0)  )
+	then
+		scoreHolder.addSoftConstraintMatch(kcontext, -100);
+		System.out.println("day off request");
+end
+
+
+
+
+
+rule "ShiftReqiredSkillsAreMet"
+	dialect "mvel"
+	when
+		ShiftAssignment( employee != null ,shift != null ,  eval(employee.skills.name.equals(shift.requiredSkill.name)==false))
+	then
+		scoreHolder.addHardConstraintMatch(kcontext, -1);
+end
+
+
+
